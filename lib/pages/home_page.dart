@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+
+// import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:awol/scoped.dart';
@@ -34,14 +36,14 @@ class _HomePageState extends State<HomePage> {
   String _barTitle = 'Operatives'; // --- match with 1st default tab shown!
 
   List<String> _titles = [
-    'Operatives',
-    'Calendar',
+    'Warehouse Operatives',
+    'Events Calendar',
   ];
 
   List<TabItem> tabItems = List.of([
     new TabItem(
-      FontAwesomeIcons.users,
-      "Duties",
+      FontAwesomeIcons.usersCog,
+      "Operatives",
       Color(0xFF993366),
     ),
     new TabItem(
@@ -60,40 +62,40 @@ class _HomePageState extends State<HomePage> {
     _barTitle = _titles[widget.initialPage];
     _navigationController = new CircularBottomNavigationController(selectedPos);
     super.initState();
-    this.initDynamicLinks();
+    // this.initDynamicLinks();
   }
 
   GlobalKey bottomNavigationKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  void initDynamicLinks() async {
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-    print('Running initDynamicLinks...');
+  // void initDynamicLinks() async {
+  //   final PendingDynamicLinkData data =
+  //       await FirebaseDynamicLinks.instance.getInitialLink();
+  //   final Uri deepLink = data?.link;
+  //   print('Running initDynamicLinks...');
 
-    if (deepLink != null) {
-      String _linkParms = deepLink.queryParameters['ix'];
-      String _linkPath = deepLink.path + _linkParms;
-      Navigator.pushNamed(context, _linkPath);
-      print("Linked: $_linkPath");
-    }
+  //   if (deepLink != null) {
+  //     String _linkParms = deepLink.queryParameters['ix'];
+  //     String _linkPath = deepLink.path + _linkParms;
+  //     Navigator.pushNamed(context, _linkPath);
+  //     print("Linked: $_linkPath");
+  //   }
 
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final Uri deepLink = dynamicLink?.link;
-      String _linkParms = deepLink.queryParameters['ix'];
-      String _linkPath = deepLink.path + _linkParms;
+  //   FirebaseDynamicLinks.instance.onLink(
+  //       onSuccess: (PendingDynamicLinkData dynamicLink) async {
+  //     final Uri deepLink = dynamicLink?.link;
+  //     String _linkParms = deepLink.queryParameters['ix'];
+  //     String _linkPath = deepLink.path + _linkParms;
 
-      if (deepLink != null) {
-        Navigator.pushNamed(context, _linkPath);
-        print("Pushed: $_linkPath");
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
-  }
+  //     if (deepLink != null) {
+  //       Navigator.pushNamed(context, _linkPath);
+  //       print("Pushed: $_linkPath");
+  //     }
+  //   }, onError: (OnLinkErrorException e) async {
+  //     print('onLinkError');
+  //     print(e.message);
+  //   });
+  // }
 
 // ---------------------------------------------------------------------------- Snack Bar
 

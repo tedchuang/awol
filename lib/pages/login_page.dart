@@ -6,42 +6,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/services.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:awol/scoped.dart';
 
-// ----------------------------------------------------------------------------
-
-class Tick extends StatelessWidget {
-  final DecorationImage image;
-  Tick({this.image});
-  @override
-  Widget build(BuildContext context) {
-    return (new Container(
-      width: 180.0,
-      height: 180.0,
-      alignment: Alignment.center,
-      decoration: new BoxDecoration(
-        image: image,
-      ),
-    ));
-  }
-}
-
-// ----------------------------------------------------------------------------
-
-DecorationImage backgroundImage = new DecorationImage(
-  image: new AssetImage('assets/wareHouse.jpeg'),
-  fit: BoxFit.cover,
-);
-
-DecorationImage tick = new DecorationImage(
-  image: new AssetImage('assets/dpInitials.png'),
-  fit: BoxFit.cover,
-);
+import '../utils/giffy_dialogs.dart';
 
 // ----------------------------------------------------------------------------
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen(MainModel model, {Key key}) : super(key: key);
+  final MainModel model;
+  LoginScreen(this.model, {Key key}) : super(key: key);
   @override
   LoginScreenState createState() => new LoginScreenState();
 }
@@ -49,8 +23,11 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   AnimationController _loginButtonController;
-
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var animationStatus = 0;
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +72,35 @@ class LoginScreenState extends State<LoginScreen>
   }
 
 // ============================================================================
+
+  Future<bool> _loginFormSubmit(
+      MainModel model, String logUser, String logPass) async {
+    Map<String, dynamic> authResult;
+    authResult = await model.authenticate(logUser, logPass);
+    if (!authResult['success']) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AssetGiffyDialog(
+          imagePath: 'assets/images/bb8_run.gif',
+          onlyOkButton: true,
+          title: Text(
+            'Account Login Failed',
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+          ),
+          description: Text(
+            authResult['message'],
+            textAlign: TextAlign.center,
+          ),
+          onOkButtonPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+    return authResult['success'];
+  }
+
+// ============================================================================
 // ============================================================================
 // ============================================================================
 
@@ -106,10 +112,9 @@ class LoginScreenState extends State<LoginScreen>
     double whiteSpace = deviceHeight > 640 ? deviceHeight - 640 : 0;
     var fmtYear = new DateFormat('y');
     String currentYear = fmtYear.format(DateTime.now());
-
     bool _obscureTextLogin = true;
-    TextEditingController emailController;
-    TextEditingController passwordController;
+    String _logUser;
+    String _logPass;
 
     void _toggleLogin() {
       setState(() {
@@ -157,83 +162,107 @@ class LoginScreenState extends State<LoginScreen>
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     new Form(
+                                        key: formKey,
                                         child: new Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: <Widget>[
 // ----------------------------------------------------------------------------
 
-                                        new TextFormField(
-                                          controller: emailController,
-                                          validator: (String value) {
-                                            if (value.isEmpty ||
-                                                value.length < 3) {
-                                              return 'Username invalid';
-                                            }
-                                            return null;
-                                          },
-                                          onSaved: (String value) {
-                                            // authenBloc.authUser(value);
-                                          },
-                                          style: TextStyle(
-                                              fontFamily: "WorkSansSemiBold",
-                                              fontSize: 16.0,
-                                              color: Colors.black),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            icon: Icon(
-                                              Icons.person_outline,
-                                              color: Colors.black,
-                                              size: 22.0,
-                                            ),
-                                            hintText: "Username",
-                                          ),
-                                        ),
-
-// ----------------------------------------------------------------------------
-
-                                        new TextFormField(
-                                          controller: passwordController,
-                                          obscureText: _obscureTextLogin,
-                                          style: TextStyle(
-                                              fontFamily: "WorkSansSemiBold",
-                                              fontSize: 16.0,
-                                              color: Colors.black),
-                                          validator: (String value) {
-                                            if (value.isEmpty ||
-                                                value.length < 7) {
-                                              return 'Password invalid';
-                                            }
-                                            return null;
-                                          },
-                                          onSaved: (String value) {
-                                            // authenBloc.authPass(value);
-                                          },
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            icon: Icon(
-                                              Icons.lock,
-                                              size: 22.0,
-                                              color: Colors.black,
-                                            ),
-                                            hintText: "Password",
-                                            hintStyle: TextStyle(
-                                                fontFamily: "WorkSansSemiBold",
-                                                fontSize: 17.0),
-                                            suffixIcon: GestureDetector(
-                                              onTap: _toggleLogin,
-                                              child: Icon(
-                                                Icons.remove_red_eye,
-                                                size: 15.0,
-                                                color: Colors.black,
+                                            Container(
+                                              decoration: new BoxDecoration(
+                                                border: new Border(
+                                                  bottom: new BorderSide(
+                                                    width: 0.5,
+                                                    color: Colors.white24,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: new TextFormField(
+                                                controller: emailController,
+                                                validator: (String value) {
+                                                  if (value.isEmpty ||
+                                                      value.length < 3) {
+                                                    return 'Username invalid';
+                                                  }
+                                                  return null;
+                                                },
+                                                onSaved: (String value) {
+                                                  _logUser = value;
+                                                },
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        "WorkSansSemiBold",
+                                                    fontSize: 16.0,
+                                                    color: Colors.black),
+                                                decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  icon: Icon(
+                                                    Icons.person_outline,
+                                                    color: Colors.black,
+                                                    size: 22.0,
+                                                  ),
+                                                  hintText: "Username",
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
 
 // ----------------------------------------------------------------------------
-                                      ],
-                                    )),
+
+                                            Container(
+                                              decoration: new BoxDecoration(
+                                                border: new Border(
+                                                  bottom: new BorderSide(
+                                                    width: 0.5,
+                                                    color: Colors.white24,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: new TextFormField(
+                                                controller: passwordController,
+                                                obscureText: _obscureTextLogin,
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        "WorkSansSemiBold",
+                                                    fontSize: 16.0,
+                                                    color: Colors.black),
+                                                validator: (String value) {
+                                                  if (value.isEmpty ||
+                                                      value.length < 7) {
+                                                    return 'Password invalid';
+                                                  }
+                                                  return null;
+                                                },
+                                                onSaved: (String value) {
+                                                  _logPass = value;
+                                                },
+                                                decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  icon: Icon(
+                                                    Icons.lock,
+                                                    size: 22.0,
+                                                    color: Colors.black,
+                                                  ),
+                                                  hintText: "Password",
+                                                  hintStyle: TextStyle(
+                                                      fontFamily:
+                                                          "WorkSansSemiBold",
+                                                      fontSize: 17.0),
+                                                  suffixIcon: GestureDetector(
+                                                    onTap: _toggleLogin,
+                                                    child: Icon(
+                                                      Icons.remove_red_eye,
+                                                      size: 15.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+// ----------------------------------------------------------------------------
+                                          ],
+                                        )),
                                   ],
                                 ),
                               ),
@@ -260,12 +289,18 @@ class LoginScreenState extends State<LoginScreen>
                               ? new Padding(
                                   padding: const EdgeInsets.only(bottom: 50.0),
                                   child: new InkWell(
-                                      onTap: () {
-                                        // authenticate(context)
-                                        //     .then((_) => setState(
-                                        //           () => animationStatus = 1,
-                                        //         ));
-                                        _playAnimation();
+                                      onTap: () async {
+                                        if (formKey.currentState.validate()) {
+                                          formKey.currentState.save();
+                                          bool _goNow = await _loginFormSubmit(
+                                              widget.model, _logUser, _logPass);
+                                          if (_goNow) {
+                                            setState(
+                                              () => animationStatus = 1,
+                                            );
+                                          }
+                                          _playAnimation();
+                                        }
                                       },
                                       child: Container(
                                         width: 320.0,
@@ -428,3 +463,33 @@ class StaggerAnimation extends StatelessWidget {
     );
   }
 }
+
+// ----------------------------------------------------------------------------
+
+class Tick extends StatelessWidget {
+  final DecorationImage image;
+  Tick({this.image});
+  @override
+  Widget build(BuildContext context) {
+    return (new Container(
+      width: 180.0,
+      height: 180.0,
+      alignment: Alignment.center,
+      decoration: new BoxDecoration(
+        image: image,
+      ),
+    ));
+  }
+}
+
+// ----------------------------------------------------------------------------
+
+DecorationImage backgroundImage = new DecorationImage(
+  image: new AssetImage('assets/wareHouse.jpeg'),
+  fit: BoxFit.cover,
+);
+
+DecorationImage tick = new DecorationImage(
+  image: new AssetImage('assets/dpInitials.png'),
+  fit: BoxFit.cover,
+);

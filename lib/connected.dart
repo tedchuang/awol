@@ -2,20 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:awol/scoped.dart';
 import 'package:device_info/device_info.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trotter/trotter.dart';
 
 import './keys.dart';
 import './models/user.dart';
-import './utils/text_sizer.dart';
 
 // ---------------------------------------------------------------------------- CONNECTED MODEL
 
@@ -24,29 +18,11 @@ mixin ConnectedModel on Model {
   bool _isLoading = false;
   String _devicePlatform;
 
-  String _selPrayerId;
+// ------------------------------------ Is it Loading
 
-  Map<DateTime, List> _svcEvents = Map<DateTime, List>();
-  String _addedSvcId = '';
-
-  List<String> fetchedTeamsList = [];
-
-  List<String> _conflicts = [];
-  String _selDutyId;
-
-  String _selSubstituteId;
-  String _targetedSub = '0';
-  bool _ccEmails = false;
-
-  String _addedVacId = '';
-
-  bool _churchLoaded = false;
-  Map<int, String> _sanctuary = Map<int, String>();
-  Map<int, String> _venue = Map<int, String>();
-
-  bool _workerLoaded = false;
-  Map<int, String> _fullNames = Map<int, String>();
-  Map<int, String> _nickNames = Map<int, String>();
+  bool get isLoading {
+    return _isLoading;
+  }
 
 // ------------------------------------ Device Platform
 
@@ -85,11 +61,13 @@ mixin UserModel on ConnectedModel {
     _isLoading = true;
     notifyListeners();
     final Map<String, dynamic> authData = {
-      'loginUser': loginUser,
-      'loginPassword': loginPassword,
+      'user': loginUser,
+      'pass': loginPassword,
       'platform': _devicePlatform,
       'apiKey': apiKey,
     };
+    print('authData:');
+    print(authData);
 
     http.Response response = await http.post(
       '$apiURI/Login.pl?key=$authKey',
@@ -100,6 +78,8 @@ mixin UserModel on ConnectedModel {
 // ----------------
 
     final Map<String, dynamic> responseData = json.decode(response.body);
+    print('responseData:');
+    print(responseData);
     bool hasError = true;
     String message = 'Something went wrong.';
 
@@ -121,16 +101,16 @@ mixin UserModel on ConnectedModel {
 
 // ---------------- No auth key given; login failed
 
-    } else if (responseData['error']['message'] == 'NO_DATA') {
+    } else if (responseData['error'] == 'NO_DATA') {
       message = 'The AWOL service has gone AWOL.\nTry again later?';
-    } else if (responseData['error']['message'] == 'INVALID_KEY') {
+    } else if (responseData['error'] == 'INVALID_KEY') {
       message =
           'Please update your app to\nexperience the latest features. Thanks!';
-    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
+    } else if (responseData['error'] == 'INVALID_PASSWORD') {
       message =
           'Password incorrect. You may want to\nuse the "Forgot Password" link below.';
     } else {
-      message = responseData['message'];
+      message = responseData['error'];
     }
     _isLoading = false;
     notifyListeners();
