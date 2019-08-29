@@ -43,7 +43,6 @@ mixin ConnectedModel on Model {
 // ---------------------------------------------------------------------------- USER MODEL
 
 mixin UserModel on ConnectedModel {
-  Timer _authTimer;
   PublishSubject<bool> _userSubject = PublishSubject();
 
   User get user {
@@ -143,16 +142,12 @@ mixin UserModel on ConnectedModel {
 
   void logout() async {
     _authenticatedUser = null;
-    _authTimer.cancel();
     _userSubject.add(false);
+    notifyListeners();
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('userId');
     prefs.remove('usrToken');
     prefs.remove('usrFull');
-  }
-
-  void setAuthTimeout(int time) {
-    _authTimer = Timer(Duration(seconds: time), logout);
   }
 }

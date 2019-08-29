@@ -97,6 +97,7 @@ class LoginScreenState extends State<LoginScreen>
         ),
       );
     }
+    print("authResult is " + authResult['success'].toString());
     return authResult['success'];
   }
 
@@ -292,14 +293,17 @@ class LoginScreenState extends State<LoginScreen>
                                       onTap: () async {
                                         if (formKey.currentState.validate()) {
                                           formKey.currentState.save();
-                                          bool _goNow = await _loginFormSubmit(
-                                              widget.model, _logUser, _logPass);
-                                          if (_goNow) {
+                                          bool _goodAuth =
+                                              await _loginFormSubmit(
+                                                  widget.model,
+                                                  _logUser,
+                                                  _logPass);
+                                          if (_goodAuth) {
                                             setState(
                                               () => animationStatus = 1,
                                             );
+                                            _playAnimation();
                                           }
-                                          _playAnimation();
                                         }
                                       },
                                       child: Container(
