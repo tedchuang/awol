@@ -14,6 +14,7 @@ import 'package:awol/scoped.dart';
 
 import '../utils/circular_navigation.dart';
 import '../utils/circular_tab_item.dart';
+import './left_drawer.dart';
 import './login_page.dart';
 import './notate_page.dart';
 import './report_page.dart';
@@ -130,6 +131,7 @@ class _HomePageState extends State<HomePage> {
       return Scaffold(
         key: _scaffoldKey,
         // backgroundColor: Color(0xFFcc6699),
+        drawer: LeftDrawer(model,showInSnackBar),
         appBar: AppBar(
           title: Text(_barTitle),
           backgroundColor: Color(0xFFcc6699),
