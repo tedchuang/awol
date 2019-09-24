@@ -89,6 +89,8 @@ mixin UserModel on ConnectedModel {
       message = 'Authentication succeeded!';
       _authenticatedUser = User(
         userId: responseData['userId'],
+        userFull: responseData['userName'],
+        userToken: responseData['userToken'],
       );
 
       _userSubject.add(true);

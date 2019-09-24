@@ -45,12 +45,12 @@ class _HomePageState extends State<HomePage> {
     new TabItem(
       FontAwesomeIcons.usersCog,
       "Operatives",
-      Color(0xFF993366),
+      Color(0xFFFF8C00),
     ),
     new TabItem(
       FontAwesomeIcons.solidCalendarCheck,
       "Events",
-      Color(0xFF993366),
+      Color(0xFFFF8C00),
     ),
   ]);
 
@@ -131,10 +131,10 @@ class _HomePageState extends State<HomePage> {
       return Scaffold(
         key: _scaffoldKey,
         // backgroundColor: Color(0xFFcc6699),
-        drawer: LeftDrawer(model,showInSnackBar),
+        drawer: LeftDrawer(model, showInSnackBar),
         appBar: AppBar(
           title: Text(_barTitle),
-          backgroundColor: Color(0xFFcc6699),
+          backgroundColor: Color(0xFF800000),
         ),
         body: Stack(
           children: <Widget>[
@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return NotatePage(widget.model, showInSnackBar);
       case 1:
-        return ReportPage(widget.model);
+        return ReportPage(widget.model, showInSnackBar);
       default:
         return LoginScreen(widget.model);
     }
@@ -168,8 +168,8 @@ class _HomePageState extends State<HomePage> {
       controller: _navigationController,
       iconsSize: 22.0,
       barHeight: bottomNavBarHeight,
-      barBackgroundColor: Color(0xFFffccff),
-      normalIconColor: Color(0xFF993366),
+      barBackgroundColor: Color(0xFF800000),
+      selectedIconColor: Color(0xFFffffff),
       animationDuration: Duration(milliseconds: 300),
       selectedCallback: (int selectedPos) {
         setState(() {

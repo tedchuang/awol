@@ -26,7 +26,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
     return <Widget>[
       AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Useful Links'),
+        title: Text(widget.model.user.userFull ?? 'Useful Links'),
       ),
       ListTile(
         dense: true,

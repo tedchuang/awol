@@ -229,7 +229,7 @@ class LoginScreenState extends State<LoginScreen>
                                                     color: Colors.black),
                                                 validator: (String value) {
                                                   if (value.isEmpty ||
-                                                      value.length < 7) {
+                                                      value.length < 3) {
                                                     return 'Password invalid';
                                                   }
                                                   return null;
@@ -458,7 +458,7 @@ class StaggerAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     buttonController.addListener(() {
       if (buttonController.isCompleted) {
-        Navigator.pushNamed(context, "/home");
+        Navigator.pushReplacementNamed(context, "/home");
       }
     });
     return new AnimatedBuilder(
