@@ -40,6 +40,14 @@ mixin ConnectedModel on Model {
   }
 }
 
+// ---------------------------------------------------------------------------- CALENDAR MODEL
+
+mixin CalendarModel on ConnectedModel {
+  Map<DateTime, List> get listCalendar {
+    return _calEvents;
+  }
+
+}
 // ---------------------------------------------------------------------------- USER MODEL
 
 mixin UserModel on ConnectedModel {
@@ -89,7 +97,8 @@ mixin UserModel on ConnectedModel {
       message = 'Authentication succeeded!';
       _authenticatedUser = User(
         userId: responseData['userId'],
-        userFull: responseData['userName'],
+        userFull: responseData['userFull'],
+        userWhse: responseData['userWhse'],
         userToken: responseData['userToken'],
       );
 
@@ -97,8 +106,9 @@ mixin UserModel on ConnectedModel {
 
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('userId', responseData['userId']);
-      prefs.setString('userToken', responseData['userToken']);
       prefs.setString('userFull', responseData['userFull']);
+      prefs.setString('userWhse', responseData['userWhse']);
+      prefs.setString('userToken', responseData['userToken']);
 
 // ---------------- No auth key given; login failed
 
@@ -126,13 +136,15 @@ mixin UserModel on ConnectedModel {
 
     if (token != null) {
       String userId = prefs.getString('userId');
-      String userToken = prefs.getString('userToken');
       String userFull = prefs.getString('userFull');
+      String userWhse = prefs.getString('userWhse');
+      String userToken = prefs.getString('userToken');
 
       _authenticatedUser = User(
         userId: userId,
-        userToken: userToken,
         userFull: userFull,
+        userWhse: userWhse,
+        userToken: userToken,
       );
 
       _userSubject.add(true);
@@ -149,7 +161,8 @@ mixin UserModel on ConnectedModel {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('userId');
-    prefs.remove('usrToken');
     prefs.remove('usrFull');
+    prefs.remove('usrWhse');
+    prefs.remove('usrToken');
   }
 }

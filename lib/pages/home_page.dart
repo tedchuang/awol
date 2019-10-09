@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   List<String> _titles = [
     'Warehouse Operatives',
-    'Events Calendar',
+    'Reported to Duty',
   ];
 
   List<TabItem> tabItems = List.of([
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     ),
     new TabItem(
       FontAwesomeIcons.solidCalendarCheck,
-      "Events",
+      "Attendance",
       Color(0xFFFF8C00),
     ),
   ]);

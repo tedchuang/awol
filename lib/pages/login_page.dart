@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/services.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:awol/scoped.dart';
 
 import '../utils/giffy_dialogs.dart';
@@ -27,6 +26,7 @@ class LoginScreenState extends State<LoginScreen>
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var animationStatus = 0;
+  bool _obscureTextLogin = true;
 
   @override
   void initState() {
@@ -113,11 +113,11 @@ class LoginScreenState extends State<LoginScreen>
     double whiteSpace = deviceHeight > 640 ? deviceHeight - 640 : 0;
     var fmtYear = new DateFormat('y');
     String currentYear = fmtYear.format(DateTime.now());
-    bool _obscureTextLogin = true;
     String _logUser;
     String _logPass;
 
     void _toggleLogin() {
+      print("Toggle from " + _obscureTextLogin.toString());
       setState(() {
         _obscureTextLogin = !_obscureTextLogin;
       });

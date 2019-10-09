@@ -34,7 +34,7 @@ dependencies:
   rxdart: ^0.22.0
   scoped_model: ^1.0.1
   shared_preferences: ^0.5.2
-  table_calendar: ^1.2.2
+  table_calendar: ^2.0.1
   trotter: ^1.0.2
   url_launcher: ^5.1.2
   vector_math: ^2.0.8
@@ -55,6 +55,5 @@ flutter:
 # -------------------------------------
 
   assets:
-    - assets/bb8_run.gif
     - assets/wareHouse.jpeg
     - assets/dpInitials.png
